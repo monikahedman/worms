@@ -1,0 +1,120 @@
+$main-bg-color: #112428;
+$main-lt-color: #737d80;
+$main-med-color: #454b4d;
+
+.rangeSlider-bound{
+    // display: flex;
+    display: grid;
+    grid-template-columns: [first] 20% [second] 80% [end];
+    align-items: center;
+    height: 55px;
+
+    .inputs{
+      display: flex;
+    }
+
+    p{
+      text-align: center;
+    }
+
+    .disabled{
+      font-size: 9px;
+      position: relative;
+      bottom: 28px;
+      // left: 100%;
+      width: 100%;
+      // margin: -10 0 0 0;
+      grid-column-start: first;
+      grid-column-end: end;
+    }
+    
+}
+
+.number-disp{
+    margin-left: 5px !important;
+    width: 35px !important;
+    font-size: 14px !important;
+
+    input[type=number]{
+      padding-left: 10px;
+      width: 35px !important;
+    }
+  }
+
+input[type=range] {
+    margin-left: 8px;
+    -webkit-appearance: none;
+    position: relative;
+    overflow: hidden;
+    width: 200px;
+    cursor: pointer;
+    border-radius: 2;
+  }
+
+  ::-webkit-slider-runnable-track {
+    background: $main-bg-color;
+    width: 150px;
+    height: 20px;
+  }
+
+  ::-webkit-inner-spin-button {
+    display: none;
+    visibility: hidden;
+  }
+
+  ::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 40px;
+    background: $main-lt-color;
+    box-shadow: -100vw 0 0 100vw $main-med-color;
+    border: 2px solid $main-lt-color;
+  }
+
+
+  ::-moz-range-track {
+    // height: 20px;
+    background: #ddd;
+  }
+
+  ::-moz-range-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 40px;
+    background: $main-lt-color;
+    box-shadow: -100vw 0 0 100vw $main-med-color;
+    box-sizing: border-box;
+    border: 2px solid $main-lt-color;
+  }
+
+  ::-ms-fill-lower {
+    // background: dodgerblue;
+  }
+
+  ::-ms-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 40px;
+    background: $main-lt-color;
+    box-shadow: -100vw 0 0 100vw $main-med-color;
+    box-sizing: border-box;
+    border: 2px solid $main-lt-color;
+  }
+
+  ::-ms-ticks-after {
+    display: none;
+  }
+
+  ::-ms-ticks-before {
+    display: none;
+  }
+
+  ::-ms-track {
+    background: #ddd;
+    color: transparent;
+    border: none;
+  }
+
+  ::-ms-tooltip {
+    display: none;
+  }
