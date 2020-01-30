@@ -33,7 +33,7 @@ export default class App extends Component {
       },
       leaveTrail: false,
       boundTail: true,
-      fadeTail: false
+      fadeNose: false
     };
 
     this.setupBindings();
@@ -63,7 +63,7 @@ export default class App extends Component {
 
     this.changeBoundTail = this.changeBoundTail.bind(this);
     this.changeLeaveTrail = this.changeLeaveTrail.bind(this);
-    this.changeFadeTail = this.changeFadeTail.bind(this);
+    this.changefadeNose = this.changefadeNose.bind(this);
   }
 
   setupRefs() {
@@ -137,10 +137,10 @@ export default class App extends Component {
     });
   }
 
-  changeFadeTail() {
-    let toSet = !this.state.fadeTail;
+  changefadeNose() {
+    let toSet = !this.state.fadeNose;
     this.setState({
-      fadeTail: toSet
+      fadeNose: toSet
     });
   }
 
@@ -424,13 +424,13 @@ export default class App extends Component {
               </div>
             </div>
             <div className="grid-box checkbox-var" style = {{justifyContent: "left"}}>
-              <p className="grid-box-item">Fade Tail</p>
+              <p className="grid-box-item">Fade Nose</p>
               <div className="grid-box-item">
                 <input
                   type="checkbox"
-                  id="fade-tail"
-                  checked={this.state.fadeTail}
-                  onChange={this.changeFadeTail}
+                  id="fade-nose"
+                  checked={this.state.fadeNose}
+                  onChange={this.changefadeNose}
                 ></input>
               </div>
             </div>

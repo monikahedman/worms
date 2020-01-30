@@ -3,7 +3,6 @@ $main-lt-color: #737d80;
 $main-med-color: #454b4d;
 
 .rangeSlider-bound{
-    // display: flex;
     display: grid;
     grid-template-columns: [first] 20% [second] 80% [end];
     align-items: center;
@@ -21,9 +20,7 @@ $main-med-color: #454b4d;
       font-size: 9px;
       position: relative;
       bottom: 28px;
-      // left: 100%;
       width: 100%;
-      // margin: -10 0 0 0;
       grid-column-start: first;
       grid-column-end: end;
     }
@@ -73,7 +70,6 @@ input[type=range] {
 
 
   ::-moz-range-track {
-    // height: 20px;
     background: #ddd;
   }
 
@@ -85,10 +81,6 @@ input[type=range] {
     box-shadow: -100vw 0 0 100vw $main-med-color;
     box-sizing: border-box;
     border: 2px solid $main-lt-color;
-  }
-
-  ::-ms-fill-lower {
-    // background: dodgerblue;
   }
 
   ::-ms-thumb {
