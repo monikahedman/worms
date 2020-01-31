@@ -7,15 +7,15 @@ export default function sketch(p) {
 
   // VARIABLE
   // number of lines in the scene
-  // default is 50
-  var particleCount = 50;
+  // default is 30
+  var particleCount = 30;
 
   // indicates whether the tail of the worm
   // should be bounded
   var boundTail = true;
 
   // if worm should leave a trail or not
-  var leaveTrail = false;
+  var leaveTrail = true;
 
   //line vars
   const flowIncrement = 0.1;
@@ -143,6 +143,11 @@ export default function sketch(p) {
         p.writeFramerate();
       }
       p.pausePlay();
+    }
+
+
+    if(particleCount !== props.wormCount) {
+      particleCount = props.wormCount
     }
 
     // updates props variable in sketch
@@ -484,16 +489,14 @@ export default function sketch(p) {
     overlay.updatePixels();
   };
 
-  // generates or deletes particles based on the number
-  // of intended particles
+  // generates particles based on the number
+  // of intended particles or deletes them
   p.createParticles = function() {
     if (particles.length < particleCount) {
-      particles.push(new Particle(wormTrails));
+      particles.push(new p.Particle(wormTrails));
     }
-
-    // removes one particle at a time
     if (particles.length > particleCount) {
-      particles.splice(0, 1);
+      particles.pop();
     }
   };
 
@@ -548,9 +551,30 @@ export default function sketch(p) {
     };
   };
 
-  class Particle {
-    constructor(canvas) {
-      var start = this.startPosition();
+  p.startPosition=function(){
+    var x, y;
+    var seedPos = this.getRandomInt(4);
+    if (seedPos == 0) {
+      x = p.getRandomInt(p.width);
+      y = 0;
+    }
+    if (seedPos == 1) {
+      x = 0;
+      y = p.getRandomInt(p.height);
+    }
+    if (seedPos == 2) {
+      x = p.getRandomInt(p.width);
+      y = p.height - 1;
+    }
+    if (seedPos == 3) {
+      x = p.width - 1;
+      y = p.getRandomInt(p.height);
+    }
+    return [x, y];
+  }
+
+  p.Particle = function(canvas) {
+      var start = p.startPosition();
       // VARIABLE, 200 is max possible length for the tail
       this.maxLength = 30;
       this.trailCanvas = canvas;
@@ -564,12 +588,11 @@ export default function sketch(p) {
       // VARIABLE
       this.trailOpacity = 50;
       // VARIABLE
-      this.color = [255, 255, 255, this.opacity];
+      this.color = [propsList[3][1][0], propsList[3][1][1], propsList[3][1][2], this.opacity];
       this.history = [];
       this.fadeNose = false;
-    }
 
-    update() {
+      this.update=function() {
       this.vel.add(this.acc);
       this.vel.limit(this.maxspeed);
       this.pos.add(this.vel);
@@ -580,39 +603,14 @@ export default function sketch(p) {
       if (this.history.length > this.maxLength) {
         this.history.splice(0, 1);
       }
+      this.color = [propsList[3][1][0], propsList[3][1][1], propsList[3][1][2], this.opacity];
     }
 
-    applyForce(force) {
+    this.applyForce=function(force) {
       this.acc.add(force);
     }
 
-    getRandomInt(max) {
-      return Math.floor(Math.random() * Math.floor(max));
-    }
-
-    startPosition() {
-      var x, y;
-      var seedPos = this.getRandomInt(4);
-      if (seedPos == 0) {
-        x = this.getRandomInt(p.width);
-        y = 0;
-      }
-      if (seedPos == 1) {
-        x = 0;
-        y = this.getRandomInt(p.height);
-      }
-      if (seedPos == 2) {
-        x = this.getRandomInt(p.width);
-        y = p.height - 1;
-      }
-      if (seedPos == 3) {
-        x = p.width - 1;
-        y = this.getRandomInt(p.height);
-      }
-      return [x, y];
-    }
-
-    show() {
+    this.show=function() {
       let opacity = this.opacity;
       let percentOpacity = 1 / this.history.length;
       let toSub = opacity * percentOpacity;
@@ -634,7 +632,7 @@ export default function sketch(p) {
       this.handleTrails();
     }
 
-    handleTrails() {
+    this.handleTrails=function() {
       this.trailCanvas.strokeWeight(1);
       this.trailCanvas.stroke(
         this.color[0],
@@ -652,16 +650,16 @@ export default function sketch(p) {
       this.updatePrev();
     }
 
-    updatePrev() {
+    this.updatePrev=function() {
       this.prevPos.x = this.pos.x;
       this.prevPos.y = this.pos.y;
     }
 
-    getTrails() {
+    this.getTrails=function() {
       return this.trailCanvas;
     }
 
-    follow(vectors) {
+    this.follow=function(vectors) {
       var x = Math.floor(this.pos.x / simplexScl);
       var y = Math.floor(this.pos.y / simplexScl);
       var index = x + y * simplexCols;
@@ -669,8 +667,8 @@ export default function sketch(p) {
       this.applyForce(force);
     }
 
-    edges() {
-      var vec = this.history[0];
+    this.edges=function() {
+        var vec = this.history[0];
       if (vec.x >= p.width - 1) {
         this.reset();
       }
@@ -685,8 +683,8 @@ export default function sketch(p) {
       }
     }
 
-    reset() {
-      var start = this.startPosition();
+    this.reset=function(){
+      var start = p.startPosition();
       this.pos = p.createVector(start[0], start[1]);
       this.vel = p.createVector(0, 0);
       this.acc = p.createVector(0, 0);

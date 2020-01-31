@@ -7,6 +7,7 @@ import p5 from "p5";
 import Modal from "react-modal";
 import ColorPicker from "./ColorPicker";
 import RangeSlider from "./RangeSlider";
+import hexToRgba from 'hex-to-rgba';
 
 Modal.setAppElement("#root");
 
@@ -561,14 +562,26 @@ export default class App extends Component {
     );
   }
 
+  rgbaConverter() {
+    var rgba = hexToRgba(this.state.wormColor);
+    var rgbaArr = rgba.split(",");
+    for(var i = 0; i < rgbaArr.length; i++){
+      rgbaArr[i] = rgbaArr[i].replace(/[^\d.-]/g, '');
+    }
+    return rgbaArr;
+  }
+
   sketchDiv() {
+    let rgbaArr = this.rgbaConverter();
+    
     return (
       <div className="sketch-box">
         <P5Wrapper
           sketch={sketch2} //0
           playing={this.state.isPlaying} //1
           changeFr={this.changeFr} //2
-          color={this.state.wormColor}
+          color={rgbaArr} //3
+          wormCount={this.state.wormProps.wormCount} //4
         ></P5Wrapper>
       </div>
     );

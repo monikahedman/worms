@@ -317,7 +317,10 @@ $main-med-color: #454b4d;
     grid-column-end: end;
     grid-row-start: 1;
     grid-row-end: row1-end;
-    background: yellow;
+    background: $main-bg-color;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .grid3 {
