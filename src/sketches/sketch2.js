@@ -61,7 +61,7 @@ export default function sketch(p) {
   let simplexNoise;
 
   // could maybe be variable?
-  let scl = 80;
+  let simplexScl = 80;
 
   // holds main canvas
   let canvas;
@@ -75,7 +75,7 @@ export default function sketch(p) {
   // circles can be generated in this radius with that
   // circle centered at the center of a square created
   // by simplex noise
-  var circleRadius = scl * 1.5;
+  var circleRadius = simplexScl * 1.5;
 
   //holds all the simplex noise data
   var simplexData = [simplexCols * simplexRows];
@@ -92,8 +92,8 @@ export default function sketch(p) {
     simplexNoise = new OpenSimplexNoise(Date.now());
 
     // sets up what is needed to create low-res simplex noise
-    simplexCols = Math.floor(p.width / scl);
-    simplexRows = Math.floor(p.height / scl);
+    simplexCols = Math.floor(p.width / simplexScl);
+    simplexRows = Math.floor(p.height / simplexScl);
     squares = [simplexRows * simplexCols];
 
     // initializes all arrays of data
@@ -167,18 +167,22 @@ export default function sketch(p) {
     }
   };
 
+  p.getRandomInt=function(max) {
+    return Math.floor(Math.random() * Math.floor(max));
+  }
+
   // picks a random spot for the center of the circle to begin
   p.pickRandSpot = function() {
     //random index for row and col in the white squares
     // spotsR and spotsC are the same length (indices correlate)
-    var randIndex = Math.floor(Math.random(0, spotsR.length));
+    var randIndex = p.getRandomInt(spotsR.length);
     var randPoint = p.pointInCircle();
     var rowRand = randPoint[0];
     var colRand = randPoint[1];
 
     // offset based on the chosen square
-    var rowOffset = spotsR[randIndex] * scl;
-    var colOffset = spotsC[randIndex] * scl;
+    var rowOffset = spotsR[randIndex] * simplexScl;
+    var colOffset = spotsC[randIndex] * simplexScl;
     // final row and column calculated
     var finalRow = rowRand + rowOffset;
     var finalCol = colRand + colOffset;
@@ -193,10 +197,10 @@ export default function sketch(p) {
   // center and are more distributed as you move outwards.
   p.pointInCircle = function() {
     var R = circleRadius;
-    var centerX = scl / 2;
-    var centerY = scl / 2;
-    var r = R * Math.sqrt(Math.random(0, 1));
-    var theta = Math.random(0, 1) * 2 * Math.PI;
+    var centerX = simplexScl / 2;
+    var centerY = simplexScl / 2;
+    var r = R * Math.sqrt(Math.random());
+    var theta = Math.random() * 2 * Math.PI;
 
     var x = centerX + r * Math.cos(theta);
     var y = centerY + r * Math.sin(theta);
@@ -217,21 +221,16 @@ export default function sketch(p) {
           var n = simplexNoise.noise3D(xoff, yoff, zoff);
           p.strokeWeight(0);
           var color = n > 0 ? 255 : 0;
-          // fill(color);
-          // rect(c * scl, r * scl, scl, scl);
-          // background(0);
 
           var index = r * simplexCols + c;
           squares[index] = color;
 
-          yoff += scl;
+          yoff += simplexScl;
         }
-        xoff += scl;
+        xoff += simplexScl;
       }
       zoff += 0.003;
     }
-
-    // fr.html(Math.floor(frameRate()));
   };
 
   // called every draw method to create and grow circles
@@ -321,8 +320,8 @@ export default function sketch(p) {
   // checks to see if the circle is within the acceptable distance from
   // a white square
   p.withinDistance = function(rowToCompare, colToCompare, pointX, pointY) {
-    p.rowCenter = rowToCompare * scl + scl / 2;
-    p.colCenter = colToCompare * scl + scl / 2;
+    p.rowCenter = rowToCompare * simplexScl + simplexScl / 2;
+    p.colCenter = colToCompare * simplexScl + simplexScl / 2;
 
     var distance = Math.floor(
       Math.abs(p.distance(p.rowCenter, p.colCenter, pointX, pointY))
@@ -342,8 +341,8 @@ export default function sketch(p) {
       var centerX = Math.floor(currentCircle.x);
       var centerY = Math.floor(currentCircle.y);
 
-      var x = Math.floor(centerX / scl);
-      var y = Math.floor(centerY / scl);
+      var x = Math.floor(centerX / simplexScl);
+      var y = Math.floor(centerY / simplexScl);
       var index = y * simplexCols + x;
       if (squares[index] > 0) {
         newCircles.push(currentCircle);
@@ -430,7 +429,7 @@ export default function sketch(p) {
   };
 
   p.fromAngle = function(angle) {
-    return [-Math.cos(angle), -Math.sin(angle)]
+    return [Math.cos(angle), Math.sin(angle)]
 }
 
   // draws worms based on the perlin noise flow field
@@ -446,19 +445,8 @@ export default function sketch(p) {
        
         var vec = p.createVector(vec1[0], vec1[1]);
 
-      //   p.stroke(255);
-      // p.push();
-      // p.translate(x*flowScl, y*flowScl);
-      // p.rotate(vec.heading());
-      // p.line(0,0,flowScl,0);
-      
-      // p.pop();
-
-        // vec.setMag(1);
         flowField[index] = vec;
         xoff += flowIncrement;
-        // stroke(0, 50);
-        // stroke(100)
       }
       yoff += flowIncrement;
 
@@ -509,21 +497,20 @@ export default function sketch(p) {
   };
 
   p.draw = () => {
-    // p.createSimplexFrame();
-    // p.getSquareSpots();
-    // p.clearCircles();
-    // p.circlePack();
-    // p.buildCircleList();
+    p.createSimplexFrame();
+    p.getSquareSpots();
+    p.clearCircles();
+    p.circlePack();
+    p.buildCircleList();
     p.createParticles();
     p.drawLines();
 
     // if a trail is being left or the tail is unbounded
-    // // then show the alternate canvas. Unbounded tails are the same as trail     // opacity set to 100%
-    // if (leaveTrail || !boundTail) {
-    //   p.image(wormTrails, 0, 0);
-    // }
-    // p.revealCircles();
-    // canvas = wormTrails;
+    // then show the alternate canvas. Unbounded tails are the same as trail     // opacity set to 100%
+    if (leaveTrail || !boundTail) {
+      p.image(wormTrails, 0, 0);
+    }
+    p.revealCircles();
 
     // fr.html(Math.floor(frameRate()));
 
@@ -607,7 +594,7 @@ export default function sketch(p) {
   
     startPosition() {
       var x, y;
-      var seedPos = this.getRandomInt(3);
+      var seedPos = this.getRandomInt(4);
       if (seedPos == 0) {
         x = this.getRandomInt(p.width);
         y = 0;
@@ -619,6 +606,10 @@ export default function sketch(p) {
       if (seedPos == 2) {
         x = this.getRandomInt(p.width);
         y = p.height - 1;
+      }
+      if (seedPos == 3) {
+        x = p.width - 1;
+        y = this.getRandomInt(p.height);
       }
       return [x, y];
     }
@@ -673,8 +664,8 @@ export default function sketch(p) {
     }
   
     follow(vectors) {
-      var x = Math.floor(this.pos.x / scl);
-      var y = Math.floor(this.pos.y / scl);
+      var x = Math.floor(this.pos.x / simplexScl);
+      var y = Math.floor(this.pos.y / simplexScl);
       var index = x + y * simplexCols;
       var force = vectors[index];
       this.applyForce(force);
