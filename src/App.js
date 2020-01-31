@@ -106,19 +106,18 @@ export default class App extends Component {
     });
   }
 
-  escFunction(event){
-    if(event.keyCode === 27) {
+  escFunction(event) {
+    if (event.keyCode === 27) {
       this.setState({ isPlaying: false });
-    }
-    else if(event.keyCode == 80) {
-      this.setState({ isPlaying: true })
+    } else if (event.keyCode == 80) {
+      this.setState({ isPlaying: true });
     }
   }
 
-  componentDidMount(){
+  componentDidMount() {
     document.addEventListener("keydown", this.escFunction, false);
   }
-  componentWillUnmount(){
+  componentWillUnmount() {
     document.removeEventListener("keydown", this.escFunction, false);
   }
 
@@ -402,7 +401,7 @@ export default class App extends Component {
             />
           </div>
           <div className="leave-trail varcontrol">
-            <div className="grid-box checkbox-var" style={{width: "70%"}}>
+            <div className="grid-box checkbox-var" style={{ width: "70%" }}>
               <p className="grid-box-item">Leave Trail</p>
               <div className="grid-box-item">
                 <input
@@ -431,7 +430,10 @@ export default class App extends Component {
             />
           </div>
           <div className="tail-bound-fade varcontrol">
-            <div className="grid-box checkbox-var" style = {{justifyContent: "center"}}>
+            <div
+              className="grid-box checkbox-var"
+              style={{ justifyContent: "center" }}
+            >
               <p className="grid-box-item">Bound Tail</p>
               <div className="grid-box-item">
                 <input
@@ -442,7 +444,10 @@ export default class App extends Component {
                 ></input>
               </div>
             </div>
-            <div className="grid-box checkbox-var" style = {{justifyContent: "left"}}>
+            <div
+              className="grid-box checkbox-var"
+              style={{ justifyContent: "left" }}
+            >
               <p className="grid-box-item">Fade Nose</p>
               <div className="grid-box-item">
                 <input
@@ -563,6 +568,7 @@ export default class App extends Component {
           sketch={sketch2} //0
           playing={this.state.isPlaying} //1
           changeFr={this.changeFr} //2
+          color={this.state.wormColor}
         ></P5Wrapper>
       </div>
     );
