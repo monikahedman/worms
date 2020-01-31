@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./stylesheet.scss";
 import P5Wrapper from "react-p5-wrapper";
 import sketch from "./sketches/sketch";
+import sketch2 from "./sketches/sketch2";
 import p5 from "p5";
 import Modal from "react-modal";
 import ColorPicker from "./ColorPicker";
@@ -64,6 +65,8 @@ export default class App extends Component {
     this.changeBoundTail = this.changeBoundTail.bind(this);
     this.changeLeaveTrail = this.changeLeaveTrail.bind(this);
     this.changefadeNose = this.changefadeNose.bind(this);
+
+    this.escFunction = this.escFunction.bind(this);
   }
 
   setupRefs() {
@@ -101,6 +104,22 @@ export default class App extends Component {
     this.setState({
       isPlaying: mode
     });
+  }
+
+  escFunction(event){
+    if(event.keyCode === 27) {
+      this.setState({ isPlaying: false });
+    }
+    else if(event.keyCode == 80) {
+      this.setState({ isPlaying: true })
+    }
+  }
+
+  componentDidMount(){
+    document.addEventListener("keydown", this.escFunction, false);
+  }
+  componentWillUnmount(){
+    document.removeEventListener("keydown", this.escFunction, false);
   }
 
   startRecording() {}
@@ -541,7 +560,7 @@ export default class App extends Component {
     return (
       <div className="sketch-box">
         <P5Wrapper
-          sketch={sketch} //0
+          sketch={sketch2} //0
           playing={this.state.isPlaying} //1
           changeFr={this.changeFr} //2
         ></P5Wrapper>
