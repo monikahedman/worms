@@ -116,14 +116,12 @@ export default function sketch(p) {
     flowCols = Math.floor(p.width / flowScl);
 
     // logistical
-    // fr = createP("");
     p.pixelDensity(1);
     overlay.pixelDensity(1);
     wormTrails.pixelDensity(1);
 
     p.frameRate(60);
-    capturer = new CCapture({ format: 'png', framerate: 12 });
-    // capturer.start();
+    capturer = new CCapture({ format: 'png', framerate: 10 });
   };
 
   // writes props to a list that is accessible

@@ -107,13 +107,17 @@ export default class App extends Component {
     this.setState({
       isPlaying: mode
     });
+
+    if(!mode){
+      this.recordClick(false)
+    }
   }
 
   escFunction(event) {
     if (event.keyCode === 27) {
-      this.setState({ isPlaying: false });
+      this.onPlayPauseClick(false)
     } else if (event.keyCode == 80) {
-      this.setState({ isPlaying: true });
+      this.onPlayPauseClick(true)
     }
   }
 
@@ -124,17 +128,17 @@ export default class App extends Component {
     document.removeEventListener("keydown", this.escFunction, false);
   }
 
-  recordClick() {
-    if(this.state.isRecording){
+  recordClick(mode) {
+    // if(this.state.isRecording){
       this.setState({
-        isRecording: false
+        isRecording: mode
       })
-    }
-    else{
-      this.setState({
-        isRecording: true
-      })
-    }
+    // }
+    // else{
+    //   this.setState({
+    //     isRecording: true
+    //   })
+    // }
   }
 
   resetSketch() {
@@ -556,7 +560,7 @@ export default class App extends Component {
             <div className="pbLabel">Stop</div>
           </span>
           <span className="playbackButton"
-          onClick={this.recordClick}>
+          onClick={() => this.recordClick(!this.state.isRecording)}>
             {this.recordSVG()}
             <div className="pbLabel">Record</div>
           </span>
