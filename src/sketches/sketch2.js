@@ -1,9 +1,19 @@
+// import CCapture from 'hex-to-rgba';
+import CCapture from "../../node_modules/ccapture.js/src/CCapture.js"
+
 export default function sketch(p) {
   let fr = 60;
   let realFr = 0;
   let isPlaying = true;
   let props = {};
   let propsList = [];
+  let resetCount = 0;
+  let isRecording = false;
+
+  var capturer;
+
+  // var capturer = new CCapture( { format: 'png' } );
+  // console.log(capturer)
 
   // VARIABLE
   // number of lines in the scene
@@ -15,7 +25,7 @@ export default function sketch(p) {
   var boundTail = true;
 
   // if worm should leave a trail or not
-  var leaveTrail = true;
+  var leaveTrail = false;
 
   //line vars
   const flowIncrement = 0.1;
@@ -112,6 +122,8 @@ export default function sketch(p) {
     wormTrails.pixelDensity(1);
 
     p.frameRate(60);
+    capturer = new CCapture({ format: 'png', framerate: 12 });
+    // capturer.start();
   };
 
   // writes props to a list that is accessible
@@ -145,14 +157,43 @@ export default function sketch(p) {
       p.pausePlay();
     }
 
+    if (particleCount !== props.wormCount) {
+      particleCount = props.wormCount;
+    }
 
-    if(particleCount !== props.wormCount) {
-      particleCount = props.wormCount
+    if (leaveTrail != props.leaveTrail) {
+      leaveTrail = props.leaveTrail;
+      wormTrails.clear();
+    }
+
+    if (pathVariation !== props.pathVar) {
+      pathVariation = props.pathVar;
+    }
+
+    if(resetCount !== props.resetInt){
+      p.reset();
+      resetCount= props.resetInt;
+    }
+
+    if(isRecording !== props.isRecording){
+      isRecording = props.isRecording;
+      if(isRecording){
+        capturer.start();
+      }
+      else{
+      //   console.log('finished recording.');
+        capturer.stop();
+      capturer.save();
+      }
     }
 
     // updates props variable in sketch
     p.writeProps(props);
   };
+
+  p.reset=function() {
+    p.setup();
+  }
 
   // finds all the spots in the simplex noise that circles
   // could generate in. if the color is white, the spot is
@@ -518,6 +559,12 @@ export default function sketch(p) {
 
     realFr = Math.floor(p.frameRate());
     p.writeFramerate();
+
+    if(isRecording) {
+      console.log('capturing frame');
+      capturer.capture(document.getElementById('defaultCanvas0'));
+      // console.log(document.getElementById('defaultCanvas0'))
+    }
   };
 
   p.Circle = function(x, y, canvas) {
@@ -551,7 +598,7 @@ export default function sketch(p) {
     };
   };
 
-  p.startPosition=function(){
+  p.startPosition = function() {
     var x, y;
     var seedPos = this.getRandomInt(4);
     if (seedPos == 0) {
@@ -571,28 +618,33 @@ export default function sketch(p) {
       y = p.getRandomInt(p.height);
     }
     return [x, y];
-  }
+  };
 
   p.Particle = function(canvas) {
-      var start = p.startPosition();
-      // VARIABLE, 200 is max possible length for the tail
-      this.maxLength = 30;
-      this.trailCanvas = canvas;
-      this.pos = p.createVector(start[0], start[1]);
-      this.prevPos = this.pos.copy();
-      this.vel = p.createVector(0, 0);
-      this.acc = p.createVector(0, 0);
-      this.maxspeed = 4;
-      // VARIABLE
-      this.opacity = 255;
-      // VARIABLE
-      this.trailOpacity = 50;
-      // VARIABLE
-      this.color = [propsList[3][1][0], propsList[3][1][1], propsList[3][1][2], this.opacity];
-      this.history = [];
-      this.fadeNose = false;
+    var start = p.startPosition();
+    // VARIABLE, 200 is max possible length for the tail
+    this.maxLength = propsList[9][1];
+    this.trailCanvas = canvas;
+    this.pos = p.createVector(start[0], start[1]);
+    this.prevPos = this.pos.copy();
+    this.vel = p.createVector(0, 0);
+    this.acc = p.createVector(0, 0);
+    this.maxspeed = 4;
+    // VARIABLE
+    this.opacity = propsList[5][1] * 255;
+    // VARIABLE
+    this.trailOpacity = propsList[7][1] * 255;
+    // VARIABLE
+    this.color = [
+      propsList[3][1][0],
+      propsList[3][1][1],
+      propsList[3][1][2],
+      this.opacity
+    ];
+    this.history = [];
+    this.fadeNose = propsList[8][1];
 
-      this.update=function() {
+    this.update = function() {
       this.vel.add(this.acc);
       this.vel.limit(this.maxspeed);
       this.pos.add(this.vel);
@@ -601,16 +653,27 @@ export default function sketch(p) {
       let v = p.createVector(this.pos.x, this.pos.y);
       this.history.push(v);
       if (this.history.length > this.maxLength) {
-        this.history.splice(0, 1);
+        let dif = this.history.length - this.maxLength;
+        let toCut = Math.round(dif / 6);
+        this.history.splice(0, toCut);
       }
-      this.color = [propsList[3][1][0], propsList[3][1][1], propsList[3][1][2], this.opacity];
-    }
+      this.color = [
+        propsList[3][1][0],
+        propsList[3][1][1],
+        propsList[3][1][2],
+        this.opacity
+      ];
+      this.opacity = propsList[5][1] * 255;
+      this.trailOpacity = propsList[7][1] * 255;
+      this.fadeNose = propsList[8][1];
+      this.maxLength = propsList[9][1];
+    };
 
-    this.applyForce=function(force) {
+    this.applyForce = function(force) {
       this.acc.add(force);
-    }
+    };
 
-    this.show=function() {
+    this.show = function() {
       let opacity = this.opacity;
       let percentOpacity = 1 / this.history.length;
       let toSub = opacity * percentOpacity;
@@ -630,9 +693,9 @@ export default function sketch(p) {
       }
 
       this.handleTrails();
-    }
+    };
 
-    this.handleTrails=function() {
+    this.handleTrails = function() {
       this.trailCanvas.strokeWeight(1);
       this.trailCanvas.stroke(
         this.color[0],
@@ -648,27 +711,27 @@ export default function sketch(p) {
         this.prevPos.y
       );
       this.updatePrev();
-    }
+    };
 
-    this.updatePrev=function() {
+    this.updatePrev = function() {
       this.prevPos.x = this.pos.x;
       this.prevPos.y = this.pos.y;
-    }
+    };
 
-    this.getTrails=function() {
+    this.getTrails = function() {
       return this.trailCanvas;
-    }
+    };
 
-    this.follow=function(vectors) {
+    this.follow = function(vectors) {
       var x = Math.floor(this.pos.x / simplexScl);
       var y = Math.floor(this.pos.y / simplexScl);
       var index = x + y * simplexCols;
       var force = vectors[index];
       this.applyForce(force);
-    }
+    };
 
-    this.edges=function() {
-        var vec = this.history[0];
+    this.edges = function() {
+      var vec = this.history[0];
       if (vec.x >= p.width - 1) {
         this.reset();
       }
@@ -681,9 +744,9 @@ export default function sketch(p) {
       if (vec.y <= 0) {
         this.reset();
       }
-    }
+    };
 
-    this.reset=function(){
+    this.reset = function() {
       var start = p.startPosition();
       this.pos = p.createVector(start[0], start[1]);
       this.vel = p.createVector(0, 0);
@@ -691,8 +754,8 @@ export default function sketch(p) {
       this.maxspeed = 4;
       this.history = [];
       this.updatePrev();
-    }
-  }
+    };
+  };
 
   // Plain JS version of Josh Forisha's implementation of opensimplex noise
   // https://github.com/joshforisha/open-simplex-noise-js

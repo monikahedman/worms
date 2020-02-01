@@ -7,7 +7,7 @@ import p5 from "p5";
 import Modal from "react-modal";
 import ColorPicker from "./ColorPicker";
 import RangeSlider from "./RangeSlider";
-import hexToRgba from 'hex-to-rgba';
+import hexToRgba from "hex-to-rgba";
 
 Modal.setAppElement("#root");
 
@@ -22,6 +22,7 @@ export default class App extends Component {
 
     this.state = {
       isPlaying: true,
+      isRecording: false,
       frameRate: 0,
       showModal: false,
       isRecording: false,
@@ -34,8 +35,8 @@ export default class App extends Component {
         pathVar: 1
       },
       leaveTrail: false,
-      boundTail: true,
-      fadeNose: false
+      fadeNose: false,
+      shouldReset: 0
     };
 
     this.setupBindings();
@@ -63,11 +64,12 @@ export default class App extends Component {
     this.changeState = this.changeState.bind(this);
     this.changeTemp = this.changeTemp.bind(this);
 
-    this.changeBoundTail = this.changeBoundTail.bind(this);
     this.changeLeaveTrail = this.changeLeaveTrail.bind(this);
     this.changefadeNose = this.changefadeNose.bind(this);
 
     this.escFunction = this.escFunction.bind(this);
+    this.resetSketch = this.resetSketch.bind(this);
+    this.recordClick = this.recordClick.bind(this);
   }
 
   setupRefs() {
@@ -122,9 +124,25 @@ export default class App extends Component {
     document.removeEventListener("keydown", this.escFunction, false);
   }
 
-  startRecording() {}
+  recordClick() {
+    if(this.state.isRecording){
+      this.setState({
+        isRecording: false
+      })
+    }
+    else{
+      this.setState({
+        isRecording: true
+      })
+    }
+  }
 
-  stopRecording() {}
+  resetSketch() {
+    let newVal = this.state.shouldReset + 1;
+    this.setState({
+      shouldReset: newVal
+    })
+  }
 
   /* handlers for the variables */
 
@@ -146,13 +164,6 @@ export default class App extends Component {
     let toSet = !this.state.leaveTrail;
     this.setState({
       leaveTrail: toSet
-    });
-  }
-
-  changeBoundTail() {
-    let toSet = !this.state.boundTail;
-    this.setState({
-      boundTail: toSet
     });
   }
 
@@ -253,6 +264,28 @@ export default class App extends Component {
           by Monika Hedman
         </h2>
       </>
+    );
+  }
+
+  resetSVG() {
+    return (
+      <svg
+        version="1.1"
+        id="Layer_1"
+        xmlns="http://www.w3.org/2000/svg"
+        x="0px"
+        y="0px"
+        viewBox="0 0 500 500"
+        className="resetSVG"
+        fill={this.light}
+      >
+        <path
+        className="st0"
+          d="M0,0v500h500V0H0z M250,453.6c-89.81,0-162.88-73.07-162.88-162.88v-20.36h40.72v20.36c0,67.37,54.79,122.16,122.16,122.16
+	s122.16-54.79,122.16-122.16S317.37,168.56,250,168.56h-20.36V250l-101.8-101.8l101.8-101.8v81.44H250
+	c89.81,0,162.88,73.07,162.88,162.88S339.81,453.6,250,453.6z"
+        />
+      </svg>
     );
   }
 
@@ -402,17 +435,13 @@ export default class App extends Component {
             />
           </div>
           <div className="leave-trail varcontrol">
-            <div className="grid-box checkbox-var" style={{ width: "70%" }}>
-              <p className="grid-box-item">Leave Trail</p>
-              <div className="grid-box-item">
-                <input
-                  type="checkbox"
-                  id="leave-trail"
-                  checked={this.state.leaveTrail}
-                  onChange={this.changeLeaveTrail}
-                ></input>
-              </div>
-            </div>
+            <p className="grid-box-item">Leave Trail</p>
+            <input
+              type="checkbox"
+              id="leave-trail"
+              checked={this.state.leaveTrail}
+              onChange={this.changeLeaveTrail}
+            ></input>
           </div>
           <div className="trail-opacity varcontrol">
             <RangeSlider
@@ -434,20 +463,6 @@ export default class App extends Component {
             <div
               className="grid-box checkbox-var"
               style={{ justifyContent: "center" }}
-            >
-              <p className="grid-box-item">Bound Tail</p>
-              <div className="grid-box-item">
-                <input
-                  type="checkbox"
-                  id="bound-tail"
-                  checked={this.state.boundTail}
-                  onChange={this.changeBoundTail}
-                ></input>
-              </div>
-            </div>
-            <div
-              className="grid-box checkbox-var"
-              style={{ justifyContent: "left" }}
             >
               <p className="grid-box-item">Fade Nose</p>
               <div className="grid-box-item">
@@ -473,7 +488,7 @@ export default class App extends Component {
               title={"Tail Length"}
               step={1}
               value={this.tempVals["tailLength"]}
-              isActive={this.state.boundTail}
+              isActive={true}
             />
           </div>
           <div className="tail-length varcontrol">
@@ -540,9 +555,15 @@ export default class App extends Component {
             {this.stopSVG()}
             <div className="pbLabel">Stop</div>
           </span>
-          <span className="playbackButton">
+          <span className="playbackButton"
+          onClick={this.recordClick}>
             {this.recordSVG()}
             <div className="pbLabel">Record</div>
+          </span>
+          <span className="playbackButton"
+          onClick={this.resetSketch}>
+            {this.resetSVG()}
+            <div className="pbLabel resetSVG">Reset</div>
           </span>
         </div>
         <div className="frameRate">
@@ -565,15 +586,15 @@ export default class App extends Component {
   rgbaConverter() {
     var rgba = hexToRgba(this.state.wormColor);
     var rgbaArr = rgba.split(",");
-    for(var i = 0; i < rgbaArr.length; i++){
-      rgbaArr[i] = rgbaArr[i].replace(/[^\d.-]/g, '');
+    for (var i = 0; i < rgbaArr.length; i++) {
+      rgbaArr[i] = rgbaArr[i].replace(/[^\d.-]/g, "");
     }
     return rgbaArr;
   }
 
   sketchDiv() {
     let rgbaArr = this.rgbaConverter();
-    
+
     return (
       <div className="sketch-box">
         <P5Wrapper
@@ -582,6 +603,14 @@ export default class App extends Component {
           changeFr={this.changeFr} //2
           color={rgbaArr} //3
           wormCount={this.state.wormProps.wormCount} //4
+          wormOpacity={this.state.wormProps.wormOpacity} //5
+          leaveTrail={this.state.leaveTrail} //6
+          trailOpacity={this.state.wormProps.trailOpacity} //7
+          fadeNose={this.state.fadeNose} //8
+          maxLength={this.state.wormProps.tailLength} //9
+          pathVar={this.state.wormProps.pathVar} //10
+          resetInt = {this.state.shouldReset} // 11
+          isRecording = {this.state.isRecording} //12
         ></P5Wrapper>
       </div>
     );
