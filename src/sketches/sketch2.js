@@ -561,9 +561,7 @@ export default function sketch(p) {
     p.writeFramerate();
 
     if(isRecording) {
-      console.log('capturing frame');
       capturer.capture(document.getElementById('defaultCanvas0'));
-      // console.log(document.getElementById('defaultCanvas0'))
     }
   };
 
