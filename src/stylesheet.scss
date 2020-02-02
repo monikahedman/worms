@@ -99,7 +99,6 @@ $main-med-color: #454b4d;
 
 .App {
   background: $main-bg-color;
-  // min-height: 100vh;
 
   h2 {
     text-align: center;
@@ -210,10 +209,7 @@ $main-med-color: #454b4d;
         }
 
         .grid-box{
-          // display: grid;
-          // grid-template-columns: 20% 80%;
           display: flex;
-          // justify-content: center;
           width: 90%;
 
           .grid-box-item{
@@ -319,7 +315,6 @@ $main-med-color: #454b4d;
     grid-row-end: row1-end;
     background: $main-bg-color;
     display: flex;
-    // justify-content: left;
     align-items: center;
     padding-left: 70px
   }
@@ -402,11 +397,6 @@ $main-med-color: #454b4d;
 
       .save {
 
-        // .saveFile{
-        //   cursor: pointer;
-        //   background: $main-med-color;
-        //   width: 100px;
-        // }
         .save-wrapper{
           text-align: center;
         }
