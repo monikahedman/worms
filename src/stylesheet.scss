@@ -407,12 +407,16 @@ $main-med-color: #454b4d;
           align-items: center;
 
           &.outputName{
-            width: 100%;
 
             p {
               color: $main-lt-color;
               margin-right: 5px;
-              font-weight: bold;
+              width: 70%;
+              font-size: 12px;
+            }
+
+            input[type=text]{
+              color: $main-lt-color
             }
           }
           
@@ -429,6 +433,7 @@ $main-med-color: #454b4d;
               margin-right: 5px;
               font-weight: bold;
               margin: 4px;
+              font-size: 18px;
             }
           }
         }

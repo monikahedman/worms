@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import "./stylesheet.scss";
 import P5Wrapper from "react-p5-wrapper";
-import sketch from "./sketches/sketch";
-import sketch2 from "./sketches/sketch2";
-import p5 from "p5";
+import sketch2 from "./sketches/sketch";
 import Modal from "react-modal";
 import ColorPicker from "./ColorPicker";
 import RangeSlider from "./RangeSlider";
@@ -22,7 +20,6 @@ export default class App extends Component {
 
     this.state = {
       isPlaying: true,
-      isRecording: false,
       frameRate: 0,
       showModal: false,
       isRecording: false,
@@ -37,8 +34,8 @@ export default class App extends Component {
       leaveTrail: false,
       fadeNose: false,
       shouldReset: 0,
-      originalFileName: "",
-      realFileName: "animation"
+      shouldSaveFile: false,
+      canSaveFile: false
     };
 
     this.setupBindings();
@@ -72,7 +69,8 @@ export default class App extends Component {
     this.escFunction = this.escFunction.bind(this);
     this.resetSketch = this.resetSketch.bind(this);
     this.recordClick = this.recordClick.bind(this);
-    this.updateFileName = this.updateFileName.bind(this);
+    this.saveFile = this.saveFile.bind(this);
+    this.endFileSave = this.endFileSave.bind(this);
   }
 
   setupRefs() {
@@ -111,37 +109,44 @@ export default class App extends Component {
       isPlaying: mode
     });
 
-    if(!mode){
-      this.recordClick(false)
+    if (!mode) {
+      this.recordClick(false);
     }
   }
 
   escFunction(event) {
     if (event.keyCode === 27) {
-      this.onPlayPauseClick(false)
-    } else if (event.keyCode == 80) {
-      this.onPlayPauseClick(true)
+      this.onPlayPauseClick(false);
+    } else if (event.keyCode === 80) {
+      this.onPlayPauseClick(true);
     }
   }
 
   componentDidMount() {
     document.addEventListener("keydown", this.escFunction, false);
   }
+
   componentWillUnmount() {
     document.removeEventListener("keydown", this.escFunction, false);
   }
 
   recordClick(mode) {
+    if (!mode && this.state.isRecording) {
       this.setState({
-        isRecording: mode
-      })
+        canSaveFile: true
+      });
+    }
+
+    this.setState({
+      isRecording: mode
+    });
   }
 
   resetSketch() {
     let newVal = this.state.shouldReset + 1;
     this.setState({
       shouldReset: newVal
-    })
+    });
     this.onPlayPauseClick(true);
   }
 
@@ -175,17 +180,19 @@ export default class App extends Component {
     });
   }
 
-  //typed file name changed to acceptable file name
-  updateFileName = (event) => {
+  saveFile() {
     this.setState({
-      originalFileName: event.target.value
+      shouldSaveFile: true
     });
-    let file = this.state.originalFileName.replace(/ /g,"_");
-    if(file = "") {
-      file = "animation"
-    }
+  }
+
+  endFileSave() {
     this.setState({
-      realFileName: file
+      shouldSaveFile: false
+    });
+
+    this.setState({
+      canSaveFile: false
     });
   }
 
@@ -218,7 +225,7 @@ export default class App extends Component {
         </p>
         <div className="external-buttons">
           <div className="button external">
-            <a target="_blank">Github</a>
+            <a  href="https://github.com/monikahedman/worms" target="_blank">Github</a>
           </div>
           <div className="button external">
             <a href="http://www.monikahedman.com" target="_blank">
@@ -295,7 +302,7 @@ export default class App extends Component {
         fill={this.light}
       >
         <path
-        className="st0"
+          className="st0"
           d="M0,0v500h500V0H0z M250,453.6c-89.81,0-162.88-73.07-162.88-162.88v-20.36h40.72v20.36c0,67.37,54.79,122.16,122.16,122.16
 	s122.16-54.79,122.16-122.16S317.37,168.56,250,168.56h-20.36V250l-101.8-101.8l101.8-101.8v81.44H250
 	c89.81,0,162.88,73.07,162.88,162.88S339.81,453.6,250,453.6z"
@@ -381,16 +388,25 @@ export default class App extends Component {
 
   fileOutputDiv() {
     return (
-      <div className = "save-wrapper">
+      <div className="save-wrapper">
         <div className="header-wrapper">
           <h2> Save Controls</h2>
         </div>
-        <div className="outputName saveText">
-          <p>File Output Name: </p>
-          <input type="text" onChange={this.updateFileName}></input>
+
+        <div
+          className="saveFile saveText"
+          style={{ opacity: this.state.canSaveFile ? 1 : 0.2 }}
+          onClick={this.saveFile}
+        >
+          <p>Save File</p>
         </div>
-        <div className = "saveFile saveText">
-          <p>{"Save File: " + this.state.realFileName + ".tar"}</p>
+
+        <div className="outputName saveText">
+          <p>
+            Files save in a .tar that holds all of the frames in the animation.
+            The frames are numbered and saved as PNG files that you can then
+            import into the software of your choosing.
+          </p>
         </div>
       </div>
     );
@@ -573,13 +589,14 @@ export default class App extends Component {
             {this.stopSVG()}
             <div className="pbLabel">Stop</div>
           </span>
-          <span className="playbackButton"
-          onClick={() => this.recordClick(!this.state.isRecording)}>
+          <span
+            className="playbackButton"
+            onClick={() => this.recordClick(!this.state.isRecording)}
+          >
             {this.recordSVG()}
             <div className="pbLabel">Record</div>
           </span>
-          <span className="playbackButton"
-          onClick={this.resetSketch}>
+          <span className="playbackButton" onClick={this.resetSketch}>
             {this.resetSVG()}
             <div className="pbLabel resetSVG">Reset</div>
           </span>
@@ -627,8 +644,10 @@ export default class App extends Component {
           fadeNose={this.state.fadeNose} //8
           maxLength={this.state.wormProps.tailLength} //9
           pathVar={this.state.wormProps.pathVar} //10
-          resetInt = {this.state.shouldReset} // 11
-          isRecording = {this.state.isRecording} //12
+          resetInt={this.state.shouldReset} // 11
+          isRecording={this.state.isRecording} //12
+          shouldSave={this.state.shouldSaveFile} //13
+          endFileSave={this.endFileSave} //15
         ></P5Wrapper>
       </div>
     );

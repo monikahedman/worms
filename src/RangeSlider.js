@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import "./rangeslider.scss";
 
 export default class RangeSlider extends React.Component {
