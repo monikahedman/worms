@@ -181,9 +181,10 @@ export default class App extends Component {
   }
 
   saveFile() {
+    if(this.state.canSaveFile){
     this.setState({
       shouldSaveFile: true
-    });
+    });}
   }
 
   endFileSave() {
