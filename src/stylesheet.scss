@@ -187,7 +187,7 @@ $main-med-color: #454b4d;
   display: grid;
   width: 100%;
   height: 100%;
-  grid-template-columns: [first] auto [middle] 70% [end];
+  grid-template-columns: [first] auto [middle] 60% [end];
   grid-template-rows: [row1-start] auto [row1-end] 25vh [last-line];
 
   .var-controls {
@@ -319,8 +319,9 @@ $main-med-color: #454b4d;
     grid-row-end: row1-end;
     background: $main-bg-color;
     display: flex;
-    justify-content: center;
+    // justify-content: left;
     align-items: center;
+    padding-left: 70px
   }
 
   .grid3 {
@@ -333,13 +334,14 @@ $main-med-color: #454b4d;
 
     .playback-grid {
       display: grid;
-      grid-template-columns: 50% 50%;
+      grid-template-columns: 40% 60%;
       width: 100%;
       height: 100%;
 
       .smallGrid {
         padding-left: 10px;
         padding-right: 10px;
+
       }
 
       .playback {
@@ -399,15 +401,45 @@ $main-med-color: #454b4d;
       }
 
       .save {
-        .outputName {
+
+        // .saveFile{
+        //   cursor: pointer;
+        //   background: $main-med-color;
+        //   width: 100px;
+        // }
+        .save-wrapper{
+          text-align: center;
+        }
+
+        .saveText {
           display: flex;
-          width: 100%;
           justify-content: center;
           align-items: center;
 
-          p {
-            color: $main-lt-color;
-            margin-right: 5px;
+          &.outputName{
+            width: 100%;
+
+            p {
+              color: $main-lt-color;
+              margin-right: 5px;
+              font-weight: bold;
+            }
+          }
+          
+          &.saveFile{
+            cursor: pointer;
+            background: $main-med-color;
+            display: inline-block;
+            padding-left: 5px;
+            padding-right: 5px;
+            margin-top: 10px;
+
+            p {
+              color: $main-bg-color;
+              margin-right: 5px;
+              font-weight: bold;
+              margin: 4px;
+            }
           }
         }
       }

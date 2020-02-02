@@ -36,7 +36,9 @@ export default class App extends Component {
       },
       leaveTrail: false,
       fadeNose: false,
-      shouldReset: 0
+      shouldReset: 0,
+      originalFileName: "",
+      realFileName: "animation"
     };
 
     this.setupBindings();
@@ -70,6 +72,7 @@ export default class App extends Component {
     this.escFunction = this.escFunction.bind(this);
     this.resetSketch = this.resetSketch.bind(this);
     this.recordClick = this.recordClick.bind(this);
+    this.updateFileName = this.updateFileName.bind(this);
   }
 
   setupRefs() {
@@ -129,16 +132,9 @@ export default class App extends Component {
   }
 
   recordClick(mode) {
-    // if(this.state.isRecording){
       this.setState({
         isRecording: mode
       })
-    // }
-    // else{
-    //   this.setState({
-    //     isRecording: true
-    //   })
-    // }
   }
 
   resetSketch() {
@@ -146,6 +142,7 @@ export default class App extends Component {
     this.setState({
       shouldReset: newVal
     })
+    this.onPlayPauseClick(true);
   }
 
   /* handlers for the variables */
@@ -175,6 +172,20 @@ export default class App extends Component {
     let toSet = !this.state.fadeNose;
     this.setState({
       fadeNose: toSet
+    });
+  }
+
+  //typed file name changed to acceptable file name
+  updateFileName = (event) => {
+    this.setState({
+      originalFileName: event.target.value
+    });
+    let file = this.state.originalFileName.replace(/ /g,"_");
+    if(file = "") {
+      file = "animation"
+    }
+    this.setState({
+      realFileName: file
     });
   }
 
@@ -370,15 +381,18 @@ export default class App extends Component {
 
   fileOutputDiv() {
     return (
-      <>
+      <div className = "save-wrapper">
         <div className="header-wrapper">
           <h2> Save Controls</h2>
         </div>
-        <div className="outputName">
+        <div className="outputName saveText">
           <p>File Output Name: </p>
-          <input type="text"></input>
+          <input type="text" onChange={this.updateFileName}></input>
         </div>
-      </>
+        <div className = "saveFile saveText">
+          <p>{"Save File: " + this.state.realFileName + ".tar"}</p>
+        </div>
+      </div>
     );
   }
 
@@ -582,7 +596,7 @@ export default class App extends Component {
     return (
       <div className="playback-grid">
         <div className="playback smallGrid">{this.playbackDiv()}</div>
-        <div className="save smallGrid">{this.fileOutputDiv()}</div>
+        <div className="save smallGrid save">{this.fileOutputDiv()}</div>
       </div>
     );
   }
