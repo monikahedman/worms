@@ -9,7 +9,7 @@
     "@types/p5": "^0.9.0",
     "ccapture.js": "^1.1.0",
     "hex-to-rgba": "^2.0.1",
-    "node-sass": "^4.13.1",
+    "node-sass": "^7.0.0",
     "p5": "^0.10.2",
     "react": "^16.12.0",
     "react-color": "^2.18.0",
